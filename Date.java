@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public class Date {
+public class Date implements Serializable{
 	private int month, day, year;
 	
 	Date(int m, int d, int y){
