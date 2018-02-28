@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -7,7 +8,11 @@ import java.util.ArrayList;
  * an ArrayList that stores note objects. 
  *
  */
-public class Agent {
+public class Agent implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Lead lead;
 	private NoteType noteType;
 	private String firstName, lastName, noteString;
@@ -19,7 +24,7 @@ public class Agent {
 		this.firstName = fn;
 		this.lastName = ln;
 		this.lead = l;
-		noteArray = new ArrayList<Note>();
+		this.noteArray = new ArrayList<Note>();
 	}
 	Agent(String fn, String ln){
 		this.firstName = fn;

@@ -20,8 +20,17 @@ import java.awt.event.FocusListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Scanner;
+
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
@@ -45,14 +54,18 @@ public class Main extends JFrame {
 	private JTextField agentFirstName;
 	private JTextField agentLastName;
 	private Agent agent;
+	private String path = "C:\\Users\\kyanderson\\eclipse-workspace\\AgentNotes\\src\\AgentSave.ser";
 	ArrayList<Agent> agentArray = new ArrayList<Agent>();
-	ArrayList<Note> noteArray = new ArrayList<Note>();;
+	ArrayList<Note> noteArray = new ArrayList<Note>();
+	private File agentSave = new File("C:\\Users\\kyanderson\\eclipse-workspace\\AgentNotes");
 	private JTextField txtMm;
 	private JTextField textField_1;
 	private JTextField textField_2;
 	private JTextField agentTxtField;
 	private JTextField actionTxtField;
 	private JTextField dateOfNoteTxtField;
+	private JComboBox<Object> comboBox = new JComboBox<Object>();
+	private JComboBox <Object> viewNoteAgentBox = new JComboBox<Object>();
 	private DefaultListModel<String> model = new DefaultListModel<>();
 
 	/**
@@ -77,6 +90,7 @@ public class Main extends JFrame {
 	 * Create the frame.
 	 */
 	public Main() {
+		agentArray = initialize();
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 731, 616);
@@ -107,8 +121,6 @@ public class Main extends JFrame {
 		layeredPane.add(panel);
 		panel.setLayout(null);
 		
-		JComboBox<Object> comboBox = new JComboBox<Object>();
-		comboBox.addItem("Select an Agent");
 		comboBox.setBounds(45, 36, 174, 26);
 		panel.add(comboBox);
 		
@@ -284,9 +296,7 @@ public class Main extends JFrame {
 		panel_1.add(dateBox);
 		tabbedPane.addTab("View Notes", null, panel_1, null);
 		panel_1.setLayout(null);
-		
-		JComboBox <Object> viewNoteAgentBox = new JComboBox<Object>();
-		viewNoteAgentBox.addItem("Select an Agent");
+
 		viewNoteAgentBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
@@ -409,12 +419,17 @@ public class Main extends JFrame {
 		JButton btnCreateAgent = new JButton("Create Agent");
 		btnCreateAgent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				if(agentFirstName.getText().isEmpty() || agentLastName.getText().isEmpty()) {
+					System.out.println("Test");
+				}
+				else {
 				Lead lead = Lead.valueOf(comboBox_2.getSelectedItem().toString());
 				agentArray.add(new Agent(agentFirstName.getText(), agentLastName.getText(),lead));
 				agentFirstName.setText(null);
 				agentLastName.setText(null);
 				comboBox.removeAllItems();
 				viewNoteAgentBox.removeAllItems();
+				model.removeAllElements();
 				comboBox.addItem("Select an Agent");
 				viewNoteAgentBox.addItem("Select an Agent");
 				for(Agent agnt: agentArray) {
@@ -422,9 +437,11 @@ public class Main extends JFrame {
 					viewNoteAgentBox.addItem(agnt.getFullName());
 					model.addElement(agnt.getFullName());
 				}
-				
-				
 				System.out.println(agentArray);
+				}
+				
+				
+
 
 			}
 		});
@@ -456,6 +473,8 @@ public class Main extends JFrame {
 		JButton btnSaveAndClose = new JButton("Save and Close");
 		btnSaveAndClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				save();
+				System.out.println("Saved");
 			}
 		});
 		btnSaveAndClose.setBounds(200, 522, 127, 23);
@@ -490,5 +509,52 @@ public class Main extends JFrame {
 			}
 		}
 		return agent;
+	}
+	public void save(){
+		try {
+			ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(path));
+			for(Agent agnt : agentArray) {
+				o.writeObject(agnt);
+			}
+			o.close();
+		}catch(FileNotFoundException e) {
+			System.out.println("File Not Found");
+			
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+			
+		}
+	}
+	public ArrayList<Agent> initialize() {
+		try {
+			Agent agent;
+			agentArray.removeAll(agentArray);
+			ObjectInputStream oi = new ObjectInputStream(new FileInputStream(path));
+			
+			while((agent = (Agent) oi.readObject()) != null) {
+				agentArray.add(agent);
+			}
+			oi.close();
+		}catch(FileNotFoundException e) {
+			
+		}catch(IOException e) {
+			
+		}catch(ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		comboBox.removeAllItems();
+		viewNoteAgentBox.removeAllItems();
+		model.removeAllElements();
+		comboBox.addItem("Select an Agent");
+		viewNoteAgentBox.addItem("Select an Agent");
+		for(Agent agnt: agentArray) {
+			comboBox.addItem(agnt.getFullName());
+			viewNoteAgentBox.addItem(agnt.getFullName());
+			model.addElement(agnt.getFullName());
+		}
+		return agentArray;
+		
 	}
 }

@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -7,8 +8,12 @@ import java.util.ArrayList;
  * what the actual note is about for future reference. 
  *
  */
-public class Note {
+public class Note implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Date date;
 	private String note;
 	private NoteType noteType;
