@@ -1,5 +1,6 @@
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 /**
  * @author kyanderson
@@ -8,7 +9,7 @@ import java.util.ArrayList;
  * an ArrayList that stores note objects. 
  *
  */
-public class Agent implements Serializable{
+public class Agent implements Serializable, Comparator<Agent>, Comparable<Agent>{
 	/**
 	 * 
 	 */
@@ -81,6 +82,14 @@ public class Agent implements Serializable{
 			}
 		}
 		return returnNote;
+	}
+	@Override
+	public int compare(Agent arg0, Agent arg1) {
+		return 0;
+	}
+	@Override
+	public int compareTo(Agent arg0) {
+		return (this.firstName).compareTo(arg0.firstName);
 	}
 
 
